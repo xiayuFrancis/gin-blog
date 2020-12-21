@@ -10,9 +10,9 @@ import (
 
 var db *gorm.DB
 
-type Mode struct {
+type Model struct {
 	ID         int `gorm:"primary_key" json:"id"`
-	CreateOn   int `json:"created_on"`
+	CreatedOn   int `json:"created_on"`
 	ModifiedOn int `json:"modified_on"`
 }
 
