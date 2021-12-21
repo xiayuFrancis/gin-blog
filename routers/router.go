@@ -1,27 +1,37 @@
 package routers
 
 import (
+	_ "gin-blog/docs"
 	"gin-blog/middleware/jwt"
-	"gin-blog/pkg/setting"
+	setting "gin-blog/pkg"
 	"gin-blog/routers/api"
 	v1 "gin-blog/routers/api/v1"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
 	gin.SetMode(setting.RunMode)
 
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.GET("/auth", api.GetAuth)
-	apiv1 := r.Group("/api/v1")
+
+	apiv1 := r.Group("api/v1")
 	apiv1.Use(jwt.JWT())
 	{
+		//获取标签列表
 		apiv1.GET("/tags", v1.GetTags)
-		apiv1.POST("/tags", v1.AddTags)
-		apiv1.PUT("/tags:id", v1.EditTags)
-		apiv1.DELETE("/tags/:id", v1.DeleteTags)
+		//新建标签
+		apiv1.POST("/tags", v1.AddTag)
+		//更新指定标签
+		apiv1.PUT("/tags/:id", v1.EditTag)
+		//删除指定标签
+		apiv1.DELETE("/tags/:id", v1.DeleteTag)
 
 		//获取文章列表
 		apiv1.GET("/articles", v1.GetArticles)

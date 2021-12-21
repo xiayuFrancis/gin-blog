@@ -11,12 +11,12 @@ type Article struct {
 	TagID int `json:"tag_id" gorm:"index"`
 	Tag   Tag `json:"tag"`
 
-	Title string `json:"title"`
-	Desc string `json:"desc"`
-	Content string `json:"content"`
-	CreatedBy string `json:"created_by"`
+	Title      string `json:"title"`
+	Desc       string `json:"desc"`
+	Content    string `json:"content"`
+	CreatedBy  string `json:"created_by"`
 	ModifiedBy string `json:"modified_by"`
-	State int `json:"state"`
+	State      int    `json:"state"`
 }
 
 func ExistArticleByID(id int) bool {
@@ -76,7 +76,6 @@ func DeleteArticle(id int) bool {
 
 func (article *Article) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
-
 	return nil
 }
 

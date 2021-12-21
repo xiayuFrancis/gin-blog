@@ -9,12 +9,12 @@ import (
 )
 
 func JWT() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(context *gin.Context) {
 		var code int
 		var data interface{}
 
 		code = e.SUCCESS
-		token := c.Query("token")
+		token := context.GetHeader("token")
 		if token == "" {
 			code = e.INVALID_PARAMS
 		} else {
@@ -27,16 +27,14 @@ func JWT() gin.HandlerFunc {
 		}
 
 		if code != e.SUCCESS {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code" : code,
-				"msg" : e.GetMsg(code),
-				"data" : data,
+			context.JSON(http.StatusUnauthorized, gin.H{
+				"code": code,
+				"msg":  e.GetMsg(code),
+				"data": data,
 			})
-
-			c.Abort()
+			context.Abort()
 			return
 		}
-
-		c.Next()
+		context.Next()
 	}
 }

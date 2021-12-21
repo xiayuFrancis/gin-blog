@@ -6,7 +6,7 @@ import (
 )
 
 type Tag struct {
-	Model
+	Model `json:"model"`
 
 	Name       string `json:"name"`
 	CreatedBy  string `json:"created_by"`
@@ -14,15 +14,25 @@ type Tag struct {
 	State      int    `json:"state"`
 }
 
+func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
+	scope.SetColumn("CreatedOn", time.Now().Unix())
+
+	return nil
+}
+
+func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
+	scope.SetColumn("ModifiedOn", time.Now().Unix())
+
+	return nil
+}
+
 func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
 	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
-
 	return
 }
 
 func GetTagTotal(maps interface{}) (count int) {
 	db.Model(&Tag{}).Where(maps).Count(&count)
-
 	return
 }
 
@@ -33,25 +43,6 @@ func ExistTagByName(name string) bool {
 		return true
 	}
 	return false
-}
-
-func AddTag(name string, state int, createBy string) bool {
-	db.Create(&Tag{
-		Name:      name,
-		CreatedBy: createBy,
-		State:     state,
-	})
-	return true
-}
-
-func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
-	scope.SetColumn("CreatedOn", time.Now().Unix())
-	return nil
-}
-
-func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
-	scope.SetColumn("ModifiedOn", time.Now().Unix())
-	return nil
 }
 
 func ExistTagByID(id int) bool {
@@ -70,7 +61,16 @@ func DeleteTag(id int) bool {
 	return true
 }
 
-func EditTag(id int, data interface{}) bool {
+func AddTag(name string, state int, createBy string) bool {
+	db.Create(&Tag{
+		Name:       name,
+		CreatedBy:  createBy,
+		State:      state,
+	})
+	return true
+}
+
+func EditTag(id int, data interface {}) bool {
 	db.Model(&Tag{}).Where("id = ?", id).Updates(data)
 
 	return true
